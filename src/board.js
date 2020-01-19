@@ -16,8 +16,9 @@ class Board extends React.Component {
     //   'O', null, null,
     // ]
 
-    // this.handleClick() = this.bind(this.handleClick)
+    // this.handleClick = this.handleClick.bind(this);
   }
+
 
   handleClick(i) {
     // make soft copy of squares array in state (Immutability!!)
@@ -32,12 +33,22 @@ class Board extends React.Component {
       // Also helps build pure components (main benefit)
       squares[i] = this.state.xIsNext ? 'X' : 'O';
   
-      this.setState({
+      this.setState({                 // don't modify state directly bec. 1) harder to debug, 2) harder to scale/optimize, 3) can overwrite setState if this.state comes after (setState not guaranteed to be synch?) 
         squares: squares,
         xIsNext: !this.state.xIsNext
       });
     }
   }
+
+
+  handleReset() {
+    const squares = Array(9).fill(null);
+    this.setState({
+      squares,
+      xIsNext: true
+    });
+  }
+
 
   renderSquare(i) {
     return (
@@ -47,13 +58,19 @@ class Board extends React.Component {
       />);
   }
 
+
   render() {
-    const winner = calculateWinner(this.state.squares);
-    let status;
+    const { squares } = this.state;
+    const winner = calculateWinner(squares);
+    let status, resetButton;
 
     // if there's a winner, display winner
     if (winner) {
       status = 'Congrats! Player ' + winner + ' won!';
+      resetButton = <button onClick={() => this.handleReset()}>Reset</button>;
+    } else if (isDraw(squares)) {
+      status = 'It\'s a Draw! No one wins';
+      resetButton = <button onClick={() => this.handleReset()}>Reset</button>;
     } else {
       status = "Next Player: " + (this.state.xIsNext ? 'X' : 'O');
     }
@@ -76,6 +93,7 @@ class Board extends React.Component {
           {this.renderSquare(7)}
           {this.renderSquare(8)}
         </div>
+        {resetButton}
       </div>
     );
   }
@@ -118,4 +136,13 @@ function calculateWinner(squares) {
   }
 
   return null;            // no winner
+}
+
+
+
+// Helper function
+// takes in squares Array, returns boolean if game is a draw
+function isDraw(squares) {
+  // if all the elements in squares array are not null, then game is over
+  return squares.every((element) => element != null);
 }

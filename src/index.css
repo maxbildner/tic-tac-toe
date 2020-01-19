@@ -32,6 +32,11 @@ ol, ul {
   width: 68px;
 }
 
+.square:hover {
+  background: #8080808f;
+  cursor: pointer;
+}
+
 .square:focus {
   outline: none;
 }

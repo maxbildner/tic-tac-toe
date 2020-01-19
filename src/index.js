@@ -27,3 +27,13 @@ ReactDOM.render(
   <Game />,
   document.getElementById('root')   
 );
+
+
+// TO DO
+// reset button
+// display message if no one wins
+
+// highlight squares for winner
+// different colored squares for each player
+// time travel
+// AI Player with two difficulties- easy or hard (always wins or draws)
