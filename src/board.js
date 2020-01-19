@@ -23,10 +23,13 @@ class Board extends React.Component {
   handleClick(i) {
     // make soft copy of squares array in state (Immutability!!)
     const squares = this.state.squares.slice();
-    
+    const winningLine = calculateWinningLine(squares);
+    let winner = null;
+    if (winningLine) winner = squares[winningLine[0]];
+
     // Only change state if value at position i in squares array is null
     // and no one won the game
-    if (squares[i] === null && calculateWinner(squares) === null) {
+    if (squares[i] === null && winner === null) {
       
       // Modify squares array (the copy not the array in state!)
       // Avoiding direct datat mutation lets us keep previous versions so we can "time travel"
@@ -50,20 +53,26 @@ class Board extends React.Component {
   }
 
 
-  renderSquare(i) {
+  renderSquare(i, winningLine) {
+    // i is in winning line
+    let square_color;
+    if (winningLine && winningLine.includes(i)) square_color = 'squareColor';
+
     return (
       <Square
         value={this.state.squares[i]}
         onClick={() => this.handleClick(i)}
+        squareColor={square_color}
       />);
   }
 
 
   render() {
     const { squares } = this.state;
-    const winner = calculateWinner(squares);
-    let status, resetButton;
-
+    const winningLine = calculateWinningLine(squares);
+    let status, resetButton, winner;
+    if (winningLine) winner = squares[winningLine[0]];
+    
     // if there's a winner, display winner
     if (winner) {
       status = 'Congrats! Player ' + winner + ' won!';
@@ -79,19 +88,19 @@ class Board extends React.Component {
       <div>
         <div className="status">{status}</div>
         <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
+          {this.renderSquare(0, winningLine)}
+          {this.renderSquare(1, winningLine)}
+          {this.renderSquare(2, winningLine)}
         </div>
         <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
+          {this.renderSquare(3, winningLine)}
+          {this.renderSquare(4, winningLine)}
+          {this.renderSquare(5, winningLine)}
         </div>
         <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
+          {this.renderSquare(6, winningLine)}
+          {this.renderSquare(7, winningLine)}
+          {this.renderSquare(8, winningLine)}
         </div>
         {resetButton}
       </div>
@@ -111,8 +120,8 @@ export default Board;
 //   'X', 'X', 'O',
 //   'O', null, null,
 // ]
-// returns 'X', 'O', or null
-function calculateWinner(squares) {
+// returns array of winning positions, or null
+function calculateWinningLine(squares) {
   const winningLines = [
     [0, 1, 2],            // nums refer to 'X's, 'O's, or null in squares array
     [3, 4, 5],
@@ -131,7 +140,7 @@ function calculateWinner(squares) {
 
     // if all values of a line in squares are the same, we have a winner
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return winningLines[i];
     }
   }
 

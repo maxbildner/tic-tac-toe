@@ -35,6 +35,7 @@ function Square(props) {
       onClick={props.onClick}
     // ^same as
     // onClick={()= this.props.onClick()}
+      id={props.squareColor}
     >
       {props.value}
     </button>
